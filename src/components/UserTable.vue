@@ -83,7 +83,7 @@ export default {
             perPage: 9,
             pages: [],   
 
-      showDeletModal: false,
+      showDeleteModal: false,
       showEditModal: false,
       showModal: false,
       errorMsg: false,
