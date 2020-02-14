@@ -7,10 +7,11 @@ class EquipmentDataService   {
         return http.get(`/Equipment/${id}`)
     }
     searchEquipment(data) {
-        return http.get(`/Equipment/search?name=${data.name}`)
+        console.log('from service', data)
+        return http.get(`/Equipment/search?name=${data}`)
     }
     createEquipment(data) {
-        return http.post('/Equipment/', data)
+        return http.post('/Equipment', data)
     }
     updateEquipment(id, data) {
         return http.put(`/Equipment/${id}`, data)

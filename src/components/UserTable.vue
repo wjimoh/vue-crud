@@ -33,12 +33,12 @@
                       </tr>
                    </thead>
                    <tbody>
-                      <tr v-for="equipment in 10" :key="equipment" class="text-center">
-                        <td>Mouse</td>
-                        <td>4</td>
-                        <td>Approved</td>
-                        <td><a href="#" class="text-info" v-on:click="showEditModal = true"><i class="fas fa-edit"></i></a></td>
-                        <td><a href="#" class="text-danger" v-on:click="showDeleteModal = true"><i class="fas fa-trash-alt"></i></a></td>
+                      <tr v-for="(equipment, index) in equipments" :key="index" class="text-center">
+                        <td>{{equipment.name}}</td>
+                        <td>{{equipment.quantity}}</td>
+                        <td>{{equipment.status}}</td>
+                        <td><a href="#" class="text-info" v-on:click="showEditEquipmentModal(equipment)"><i class="fas fa-edit"></i></a></td>
+                        <td><a href="#" class="text-danger" v-on:click="showDeleteModalMtd(equipment.id)"><i class="fas fa-trash-alt"></i></a></td>
                       </tr>
                    </tbody>
                 </table>
@@ -61,8 +61,8 @@
        </div>
    </div>
        <app-modal v-if="showModal" @close="showModal = false"></app-modal>
-       <app-edit-modal v-if="showEditModal" @close="showEditModal = false"></app-edit-Modal>
-      <app-delete-modal v-if="showDeleteModal" @close="showDeleteModal = false"></app-delete-Modal>
+      <app-delete-modal v-if="showDeleteModal" @close="showDeleteModal = false" :equipmentId="equipmentId"></app-delete-Modal>
+      <app-edit-modal v-if="showEditModal" :data="equipment" @close="showEditModal = false"></app-edit-Modal>
   </div>
 
 
@@ -73,10 +73,14 @@
 import Modal from "./Modal.vue";
 import EditModal from "./EditModal.vue";
 import DeleteModal from "./DeleteModal.vue";
+import EquipmentDataService from "../services/EquipmentDataService";
+import {eventBus} from "../main";
 
 export default {
    data() {
     return {
+      equipments: [],
+        equipment: null,
 
        posts : [''],
             page: 1,
@@ -87,13 +91,57 @@ export default {
       showEditModal: false,
       showModal: false,
       errorMsg: false,
-      successMsg: false
+      successMsg: false,
+      equipmentId: ''
     }
   },
+  created () {
+      this.getData()
+      eventBus.$on('getData', (res) => {
+         console.log('got here', res)
+         this.getData()
+      })
+
+         eventBus.$on('searchName', (res) => {
+            this.searchEquipment(res)
+      })
+
+  },
      methods: {
-            // modalPage() {
-            //     this.$router.push('/Modal')
-            // }
+        getData(){
+           EquipmentDataService.getAllEquipment()
+           .then(response => {
+          this.equipments = response.data
+           })
+        },
+
+        showEditEquipmentModal (equipment) {
+           this.equipment = equipment
+           console.log(this.equipment)
+           this.showEditModal = true
+        },
+
+        showDeleteModalMtd (id) {
+           this.equipmentId = id
+         //   console.log(equipment)
+         //    eventBus.$emit('equipment', equipment)
+            this.showDeleteModal = true
+        },
+        searchEquipment(name) {
+           if(name) {
+    EquipmentDataService.searchEquipment(name)
+            .then(response => {
+               this.equipments = response.data;
+            })
+            .catch(e => {
+               console.log(e)
+            })
+           } else {
+this.getData()
+           }
+        
+        }
+
         },
    components: {
     appModal: Modal,

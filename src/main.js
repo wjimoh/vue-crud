@@ -1,9 +1,10 @@
 import Vue from 'vue'
+import VueResource from 'vue-resource';
 import vueRouter from 'vue-router';
 import App from './App.vue'
 import { routes } from './routes';
 
-
+Vue.use(VueResource);
 Vue.use(vueRouter);
 
 const HelloJs = require('hellojs/dist/hello.all.min.js');
@@ -16,11 +17,15 @@ HelloJs.init({
 }, {
   redirect_uri: 'authcallback/'
 });
+
 Vue.use(VueHello, HelloJs);
+
+export const eventBus = new Vue()
 
 const router = new vueRouter({
   routes
 });
+
 
 Vue.config.productionTip = false
 

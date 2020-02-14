@@ -5,24 +5,23 @@
       <div class="modal-wrapper">
         <div class="modal-container">
 
-          <div class="modal-header">
+          <!-- <div class="modal-header">
             <slot name="header">
               Create New Equipment
             </slot>
-          </div>
+          </div> -->
 
           <div class="modal-body">
             <slot name="body">
-             
+             <h6>Are you sure you want to delete this equipment?</h6> 
             </slot>
-          </div>
-        <h4>Are you sure you want to delete this equipment?</h4>          
+          </div>         
         <div class="modal-footer">
             <slot name="footer">
                 <button class="modal-default-button btn-primary" @click="$emit('close')">
                 No
               </button>
-              <button class="modal-default-button btn-primary" @click="$emit('deleteEquipment')">
+              <button class="modal-default-button btn-primary" @click="deleteEquipment()">
                 Yes
               </button>
             </slot>
@@ -35,8 +34,29 @@
 </template>
 
 <script>
+import EquipmentDataService from "../services/EquipmentDataService";
+import {eventBus} from './../main'
 export default {
-  
+  props: ['equipmentId']
+      ,
+  data () {
+    return {
+      // equipmentId: '',
+      id: ''
+    }
+  },
+
+  created () {
+  },
+  methods: {
+    deleteEquipment() {
+      EquipmentDataService.deleteEquipment(this.equipmentId).then(res => {
+        console.log(res)
+      eventBus.$emit('getData', true)
+      this.$emit('close')
+      })
+    }
+  }
 }
 </script>
 
@@ -59,7 +79,8 @@ export default {
 }
 
 .modal-container {
-  width: 400px;
+  height: 200px;
+  width: 270px;
   margin: 0px auto;
   padding: 20px 30px;
   background-color: #fff;

@@ -1,60 +1,118 @@
 <template>
-
   <transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
-
           <div class="modal-header">
-            <slot name="header">
-              Create New Equipment
-            </slot>
+            <slot name="header">Create New Equipment</slot>
           </div>
 
           <div class="modal-body">
             <slot name="body">
-             
-        <form>
-          <div class="form-group">
-            <label>Equipment Name</label>
-            <input type="text" class="form-control" placeholder="Equipment Name">
-          </div>
-          <div class="form-group">
-            <label>Quantity </label>
-            <input type="number" class="form-control" placeholder="Equipment Quantity">
-          </div>
-          <div class="form-group">
-            <label>Type</label>
-            <select class="form-control">
-            <option>Indoor</option>
-            <option>Outdoor</option>
-        </select>
-          </div>
-        </form>
+              <form>
+                <div class="form-group">
+                  <label>Equipment Name</label>
+                  <input
+                    type="text"
+                    class="form-control"
+                    v-model="equipment.name"
+                    placeholder="Equipment Name"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Quantity</label>
+                  <input
+                    type="number"
+                    class="form-control"
+                    v-model="equipment.quantity"
+                    placeholder="Equipment Quantity"
+                  />
+                </div>
+                <div class="form-group">
+                  <label>Type</label>
+                  <select class="form-control" v-model="equipment.type">
+                    <option
+                      v-for="item in equipment.typeName"
+                      :key="item.id"
+                      :value="item.id"
+                    >{{item.value}}</option>
+                  </select>
+                </div>
+              </form>
             </slot>
           </div>
 
           <div class="modal-footer">
             <slot name="footer">
-                <button class="modal-default-button btn-primary" @click="$emit('close')">
-                Cancel
-              </button>
-              <button class="modal-default-button btn-primary" @click="$emit('saveEquipment')">
-                Add
-              </button>
+              <button class="modal-default-button btn-primary" @click="$emit('close')">Cancel</button>
+              <button class="modal-default-button btn-primary" @click="saveForm">Add</button>
             </slot>
           </div>
         </div>
       </div>
     </div>
   </transition>
-
 </template>
 
 <script>
+import EquipmentDataService from "../services/EquipmentDataService";
+import {eventBus} from "../main";
+
 export default {
-  
-}
+  data() {
+    return {
+      equipment: {
+        id: "",
+        name: "",
+        status: 1,
+        statusName: [
+          {id:0, value:"Approved"},
+          {id:1, value:"Declined"}
+        ],
+        quantity: null,
+        typeName: [
+          {id: 0, value:"Indoor"},
+          {id: 1, value:"Outdoor"}
+        ],
+        type: ""
+      }
+    };
+  },
+  methods:{
+    saveForm() {
+      // console.log(this.equipment)
+      if (this.equipment.type === 0) {
+        this.equipment.typeName = "Indoor";
+      } else {
+        this.equipment.typeName = "Outdoor";
+      }
+
+      if (this.equipment.status === 1) {
+        this.equipment.statusName = "Approved";
+      } else {
+        this.equipment.statusName = "Declined";
+      }
+      var data = {
+        name: this.equipment.name,
+        status: parseInt(this.equipment.status),
+        statusName: this.equipment.statusName,
+        type: parseInt(this.equipment.type),
+        typeName: this.equipment.typeName,
+        quantity: parseInt(this.equipment.quantity)
+      };
+
+  console.log(data);
+      EquipmentDataService.createEquipment(data)
+      .then(response => {
+        this.equipment.id = response.data.id;
+        this.$emit('close')
+        eventBus.$emit('getData', true)
+      }, err => {
+        console.log(err)
+      });
+    }
+  }
+};
 </script>
 
 <style scoped>
@@ -65,9 +123,9 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: table;
-  transition: opacity .3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .modal-wrapper {
@@ -81,8 +139,8 @@ export default {
   padding: 20px 30px;
   background-color: #fff;
   border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  transition: all .3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all 0.3s ease;
   font-family: Helvetica, Arial, sans-serif;
 }
 
