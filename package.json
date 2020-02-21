@@ -11,6 +11,7 @@
     "axios": "^0.19.2",
     "core-js": "^3.6.4",
     "hellojs": "^1.18.4",
+    "vee-validate": "^3.2.5",
     "vue": "^2.6.11",
     "vue-hellojs": "0.0.4",
     "vue-resource": "^1.5.1",

@@ -1,81 +1,74 @@
 <template>
-
   <transition name="modal">
     <div class="modal-mask">
       <div class="modal-wrapper">
         <div class="modal-container">
-
           <div class="modal-header">
-            <slot name="header">
-              Edit Equipment
-            </slot>
+            <slot name="header">Edit Equipment</slot>
           </div>
 
           <div class="modal-body">
             <slot name="body">
-             
-            <form>
+              <form>
                 <div class="form-group">
                   <label>Equipment Name</label>
                   <input
                     type="text"
                     class="form-control"
                     v-model="equipment.name"
-                    placeholder="Equipment Name"/>
+                    placeholder="Equipment Name"
+                  />
                 </div>
                 <div class="form-group">
                   <label>Quantity</label>
-                  <input
-                    type="text"
-                    class="form-control"
-                    v-model="equipment.quantity"
-                    placeholder="Equipment Quantity"/>
+                  <validationProvider rules="required|min_value:1" v-slot="{ errors }">
+                    <input
+                      type="number"
+                      class="form-control"
+                      v-model="equipment.quantity"
+                      min="1"
+                      placeholder="Equipment Quantity"
+                    />
+                    <span>{{ errors[0] }}</span>
+                  </validationProvider>
                 </div>
                 <div class="form-group">
                   <label>Type</label>
                   <select class="form-control" v-model="equipment.type">
-                    <option
-                      v-for="item in type"
-                      :key="item.id"
-                      :value="item.id"
-                    >{{item.value}}</option>
+                    <option v-for="item in type" :key="item.id" :value="item.id">{{item.value}}</option>
                   </select>
                 </div>
               </form>
-
             </slot>
+            <label>{{ error }}</label>
           </div>
 
           <div class="modal-footer">
             <slot name="footer">
-                <button class="modal-default-button btn-primary" @click="closeModal()">
-                Cancel
-              </button>
-              <button class="modal-default-button btn-primary" @click="saveForm()">
-                Add
-              </button>
+              <button class="modal-default-button btn-primary" @click="closeModal()">Cancel</button>
+              <button class="modal-default-button btn-primary" @click="saveForm()">Add</button>
             </slot>
           </div>
         </div>
       </div>
     </div>
   </transition>
-
 </template>
 
 <script>
-import EquipmentDataService from "../services/EquipmentDataService";
-import {eventBus} from "../main";
+import EquipmentDataService from "../../services/EquipmentDataService";
+import { eventBus } from "../../main";
 
 export default {
-  props: ['data'],
-   data() {
+  props: ["data"],
+  data() {
     return {
       type: [
-          {id: 0, value:"Indoor"},
-          {id: 1, value:"Outdoor"}
-        ],
-        equipment: null
+        { id: 0, value: "Indoor" },
+        { id: 1, value: "Outdoor" }
+      ],
+      equipment: null,
+      error: ""
       // equipment: {
       //   id: "",
       //   name: "",
@@ -87,11 +80,11 @@ export default {
       // }
     };
   },
-  created () {
-    this.equipment = {...this.data}
-    console.log('testtt', this.data)
+  created() {
+    this.equipment = { ...this.data };
+    console.log("testtt", this.data);
   },
-  methods:{
+  methods: {
     saveForm() {
       // console.log(this.equipment)
       if (this.equipment.type === 0) {
@@ -115,22 +108,26 @@ export default {
         quantity: parseInt(this.equipment.quantity)
       };
 
-      EquipmentDataService.updateEquipment(this.equipment.id, equipment)
-      .then(response => {
-        console.log(response)
-        this.equipment = null
-        this.$emit('close')
-        eventBus.$emit('getData', true)
-      }, err => {
-        console.log(err)
-      });
+      EquipmentDataService.updateEquipment(this.equipment.id, equipment).then(
+        response => {
+          console.log(response);
+          this.equipment = null;
+          this.$emit("close");
+          eventBus.$emit("getData", true);
+          this.error = '';
+        },
+        err => {
+          console.log(err);
+          this.error = err.title;
+        }
+      );
     },
-    closeModal () {
-      this.equipment = null
-      this.$emit('close')
+    closeModal() {
+      this.equipment = null;
+      this.$emit("close");
     }
   }
-}
+};
 </script>
 
 <style scoped>
@@ -141,9 +138,9 @@ export default {
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, .5);
+  background-color: rgba(0, 0, 0, 0.5);
   display: table;
-  transition: opacity .3s ease;
+  transition: opacity 0.3s ease;
 }
 
 .modal-wrapper {
@@ -157,8 +154,8 @@ export default {
   padding: 20px 30px;
   background-color: #fff;
   border-radius: 2px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, .33);
-  transition: all .3s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.33);
+  transition: all 0.3s ease;
   font-family: Helvetica, Arial, sans-serif;
 }
 

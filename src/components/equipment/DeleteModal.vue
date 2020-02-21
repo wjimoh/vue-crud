@@ -34,8 +34,8 @@
 </template>
 
 <script>
-import EquipmentDataService from "../services/EquipmentDataService";
-import {eventBus} from './../main'
+import EquipmentDataService from "../../services/EquipmentDataService";
+import {eventBus} from '../../main';
 export default {
   props: ['equipmentId']
       ,

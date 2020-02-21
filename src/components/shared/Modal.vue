@@ -16,17 +16,19 @@
                     type="text"
                     class="form-control"
                     v-model="equipment.name"
-                    placeholder="Equipment Name"
-                  />
+                    placeholder="Equipment Name"/>
                 </div>
                 <div class="form-group">
                   <label>Quantity</label>
+                  <validationProvider rules="required|min_value:1"  v-slot="{ errors }">
                   <input
                     type="number"
                     class="form-control"
                     v-model="equipment.quantity"
-                    placeholder="Equipment Quantity"
-                  />
+                    min='1'
+                    placeholder="Equipment Quantity"/>
+                    <span>{{ errors[0] }}</span>
+                  </validationProvider>
                 </div>
                 <div class="form-group">
                   <label>Type</label>
@@ -55,8 +57,8 @@
 </template>
 
 <script>
-import EquipmentDataService from "../services/EquipmentDataService";
-import {eventBus} from "../main";
+import EquipmentDataService from "../../services/EquipmentDataService";
+import {eventBus} from "../../main";
 
 export default {
   data() {

@@ -1,12 +1,38 @@
-import Home from './components/Home.vue';
-import Login from './components/Login.vue';
-import UserTable from './components/UserTable.vue';
-import Modal from './components/Modal.vue';
+import Vue from 'vue'
+// import Home from './components/equipment/Home.vue';
+import Login from './components/security/Login.vue';
+import Equipment from './components/equipment/Equipment.vue';
+import Modal from './components/shared/Modal.vue';
+import vueRouter from 'vue-router';
+import { eventBus } from "./main";
 
+
+
+Vue.use(vueRouter);
+
+function guardRoute(to, from, next) {
+    var userToken = JSON.parse(localStorage.getItem('hello'))
+    if (!userToken) {
+        next('/login')
+    } else {
+        eventBus.$emit("isAuthenticated", true);
+        next()
+    }
+}
 
 export const routes = [
-    { path: '', component: Home },
+    {
+        path: '', component: Equipment,
+        beforeEnter: guardRoute
+    },
     { path: '/Login', component: Login },
-    { path: '/UserTable', component: UserTable },
-    { path: '/Modal', component: Modal}
+
+    {
+        path: '/equipment', component: Equipment,
+        beforeEnter: guardRoute
+    },
+    {
+        path: '/Modal', component: Modal,
+        beforeEnter: guardRoute
+    }
 ];

@@ -3,10 +3,10 @@
 </template>
 
 <script>
-    import Users from './components/UserTable';
+    import Equipment from './components/equipment/Equipment';
     export default {
         components: {
-            appUserTable: Users
+            appUserTable: Equipment
         }
     };
 </script>
